@@ -1,0 +1,77 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://terrain.tscn" type="PackedScene" id=1]
+[ext_resource path="res://player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://world.gd" type="Script" id=3]
+[ext_resource path="res://enemy.tscn" type="PackedScene" id=4]
+[ext_resource path="res://coin.tscn" type="PackedScene" id=5]
+[ext_resource path="res://HUD.tscn" type="PackedScene" id=6]
+[ext_resource path="res://assets/flag.png" type="Texture" id=7]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 1240.5, 10 )
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 6.75, 4.375 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 25.5, 57 )
+
+[node name="world" type="Node2D"]
+script = ExtResource( 3 )
+
+[node name="terrain" parent="." instance=ExtResource( 1 )]
+scale = Vector2( 3, 3 )
+cell_size = Vector2( 18, 18 )
+tile_data = PoolIntArray( 65535, 0, 0, 131071, 0, 0, 65546, 0, 13, 65547, 0, 13, 65548, 0, 13, 196607, 0, 0, 131077, 0, 13, 131078, 0, 12, 131079, 0, 13, 262143, 0, 0, 196614, 0, 131084, 196623, 0, 2, 196624, 0, 2, 196625, 0, 2, 196626, 0, 2, 327679, 0, 0, 262150, 0, 131084, 393215, 0, 0, 327680, 0, 2, 327681, 0, 2, 327682, 0, 2, 327683, 0, 2, 327684, 0, 2, 327685, 0, 2, 327686, 0, 2, 458751, 0, 0, 393216, 0, 5, 393217, 0, 5, 393218, 0, 5, 393219, 0, 5, 393220, 0, 5, 393221, 0, 5, 393222, 0, 5, 458752, 0, 4, 458753, 0, 4, 458754, 0, 4, 458755, 0, 4, 458756, 0, 4, 458757, 0, 4, 458758, 0, 4, 524288, 0, 4, 524289, 0, 4, 524290, 0, 4, 524291, 0, 4, 524292, 0, 4, 524293, 0, 4, 524294, 0, 4, 589824, 0, 4, 589825, 0, 4, 589826, 0, 4, 589827, 0, 4, 589828, 0, 4, 589829, 0, 4, 589830, 0, 4 )
+
+[node name="player" parent="." instance=ExtResource( 2 )]
+position = Vector2( 30, 100 )
+
+[node name="Camera2D" type="Camera2D" parent="player"]
+current = true
+limit_left = 0
+limit_bottom = 600
+limit_smoothed = true
+drag_margin_h_enabled = true
+drag_margin_v_enabled = true
+smoothing_enabled = true
+drag_margin_left = 0.4
+drag_margin_right = 0.4
+
+[node name="kill" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="kill"]
+position = Vector2( 511, 601 )
+shape = SubResource( 1 )
+
+[node name="enemy" parent="." instance=ExtResource( 4 )]
+position = Vector2( 300, 200 )
+
+[node name="hurtbox" type="Area2D" parent="enemy"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="enemy/hurtbox"]
+position = Vector2( 0.5, 5.625 )
+shape = SubResource( 3 )
+
+[node name="coin" parent="." instance=ExtResource( 5 )]
+position = Vector2( 622, 35 )
+
+[node name="HUD" parent="." instance=ExtResource( 6 )]
+
+[node name="win" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="win"]
+position = Vector2( 996.5, 114 )
+shape = SubResource( 2 )
+
+[node name="flag" type="Sprite" parent="win"]
+position = Vector2( 999, 113 )
+scale = Vector2( 3, 3 )
+texture = ExtResource( 7 )
+
+[connection signal="body_entered" from="kill" to="." method="_on_kill_body_entered"]
+[connection signal="body_entered" from="enemy/hurtbox" to="." method="_on_hurtbox_body_entered"]
+[connection signal="body_entered" from="coin" to="." method="_on_coin_body_entered"]
+[connection signal="start_game" from="HUD" to="." method="new_game"]
+[connection signal="body_entered" from="win" to="." method="_on_win_body_entered"]
